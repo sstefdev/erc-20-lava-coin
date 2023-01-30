@@ -23,6 +23,29 @@ contract ERC20 {
         _mint(msg.sender, 100e18);
     }
 
+    function deposit() external payable {
+        balanceOf[msg.sender] += msg.value;
+        totalSupply += msg.value;
+    }
+
+    function redeem(uint256 _value) public {
+        require(balanceOf[msg.sender] >= _value, "Not enough balance");
+        require(
+            allowance[msg.sender][msg.sender] >= _value,
+            "Not enough allowed balance"
+        );
+
+        balanceOf[msg.sender] -= _value;
+        allowance[msg.sender][msg.sender] -= _value;
+        totalSupply -= _value;
+
+        // Burn function
+        uint256 burnValue = _value;
+        delete burnValue;
+
+        _transfer(msg.sender, address(0), _value);
+    }
+
     function decimals() external pure returns (uint8) {
         return 18;
     }
